@@ -39,10 +39,16 @@ with open(path, 'rb') as handler:
 # Get portfolio holdings' tickers
 tickers = prompts.keys()
 
+# Load PDF class (inhereted original FPDF but utilized polymorphism to set footer)
+pdf = PDF()
+
 # Iterate through tickers to generate pdfs
 for stock in tickers:
 
     with open(fr"portfolio_reports_1_31_22\{stock}.txt", "r") as file:
+
+        # Add a page
+        pdf.add_page()
 
         # Read the contents of the txt file which contains the copied ChatGPT3 output
         report_txt = file.read().encode('latin-1', 'replace').decode('latin-1')
@@ -50,12 +56,6 @@ for stock in tickers:
         date = dt.date.today()
         title = f'TAMID Equity Research Report {date}: {stock}'
         
-        # Load PDF class (inhereted original FPDF but utilized polymorphism to set footer)
-        pdf = PDF()
-        
-        # Add a page
-        pdf.add_page()
-
         # Use Logo for Header
         image_w = 40
         image_h = 30
@@ -80,6 +80,10 @@ for stock in tickers:
         
         # Define width height, and justification of each line
         pdf.multi_cell(190, 10, txt = report_txt, align='FJ')
-                
-        # save the pdf with name .pdf
-        pdf.output(fr"{stock}_report.pdf")
+
+        # -------------------------------------- Use this line if you want individual PDFs --------------------------------------
+        # # save the pdf with name .pdf
+        # pdf.output(fr"{stock}_report.pdf")
+
+# save the pdf with name .pdf
+pdf.output(fr"portfolio_reports_1_31_22/equity_research_reports_{date}.pdf")
