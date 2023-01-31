@@ -18,7 +18,7 @@ class equity_research_reports():
         a compressed summary of significant news. These reports will later be fed into ChatGPT3 for a generative summary and formal equity reserach report.
     """
 
-    def __init__(self, tickers: np.array, n_articles = 10) -> None:
+    def __init__(self, tickers: np.array, n_articles = 8) -> None:
         """
         Args:
             tickers (np.array): Portfolio constituents.
@@ -77,7 +77,7 @@ class equity_research_reports():
                 for txt in article_txt_iter:
                     article_txt += txt.text.strip()
                 
-                return article_txt
+                return str(article_txt)
 
             except:
                 print(f'Reponse Error - Final Article: {article.status_code}')
@@ -108,7 +108,7 @@ class equity_research_reports():
                 for txt in article_txt_iter:
                     article_txt += txt.text.strip()
                 
-                return article_txt
+                return str(article_txt)
             
             except:
                 print(f'Reponse Error - Yahoo Gateway: {yahoo_gateway_response.status_code}')
@@ -116,7 +116,7 @@ class equity_research_reports():
         
         return ''
 
-    def get_stock_news(self, url: str, n_articles = 10) -> np.array:
+    def get_stock_news(self, url: str, n_articles = 8) -> np.array:
         """ Pass a given stock's FinViz URL to this function to store all relevent news in a single string. 
             We initially leverage a FinViz URL which then takes us to a series of Yahoo Finance articles. 
             This is to circumvent Yahoo Finance's ads framework, making it easier to immediately get relevant information. 
@@ -176,8 +176,6 @@ class equity_research_reports():
                 
                 # If the text has not already been added (i.e., a unique article has been parsed)
                 if np.sum(np.isin(tmp_article_text, stock_news)) == 0:
-
-                    print(article)
                     
                     # Store text
                     stock_news = np.append(stock_news, tmp_article_text)
@@ -192,7 +190,7 @@ class equity_research_reports():
             return None
 
 
-    def compress_articles(self, stock_news: np.array, n_sentences=5) -> str:
+    def compress_articles(self, stock_news: np.array, n_sentences=10) -> str:
         """ Compress and summarizes a np.array of news article content into a single string. This will be done with the extractive Luhn Summarization algorithm.
             Here, we can specify approximately how many sentences we want in the summary. If the summary is too long (according to ChatGPT3 max tokens), 
             decrease the number of sentences by 1 recursively until the token_size < max_token_size for ChatGPT3.
@@ -206,7 +204,7 @@ class equity_research_reports():
             str: A given stock's compressed news summary.
         """
 
-        article_summary = "" 
+        article_summary = '' 
 
         for article in stock_news:
 
@@ -220,6 +218,12 @@ class equity_research_reports():
             for sentence in summary:
                 article_summary += str(sentence)
                 article_summary += '\n'
+            
+        print(type(article_summary))
+        print(article_summary)
+        print(len(article_summary.strip()))
+        print('\n')
+        print('==='*100)
                                 
         # Recursively call compress_articles function until a short-enough response is generated
         if len(article_summary.strip()) > 15000:
@@ -265,10 +269,11 @@ class equity_research_reports():
 
 # Define portfolio constituents and generate compressed news summaries for each one that will act as prompts for ChatGPT3
 tickers = ['FTAI', 'AMT', 'NEE', 'TDOC', 'INTC', 'FISV', 'DAL', 'ISRG', 'GOOS', 'TXN', 'TSM', 'MHK', 'ACLS', 'EPD', 'PLYM', 'ED']
+# tickers = ['HIFS']
 equity_research_reports  = equity_research_reports(tickers).equity_research_reports 
 
 # Pickle the research report prompts
-path = r'portfolio_reports_1_31_22/chat_gpt_prompts.pickle'
+path = r'portfolio_reports_1-31-23/chat_gpt_prompts.pickle'
 with open(path, 'wb') as handler:
     pickle.dump(equity_research_reports, handler, protocol=pickle.HIGHEST_PROTOCOL) 
 

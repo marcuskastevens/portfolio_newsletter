@@ -31,7 +31,7 @@ class PDF(FPDF):
 
 
 # Load all ChatGPT prompts from pickled dict to get portfolio constituents
-path = r'portfolio_reports_1_31_22/chat_gpt_prompts.pickle'
+path = r'portfolio_reports_1-31-23/chat_gpt_prompts.pickle'
 
 with open(path, 'rb') as handler:
     prompts = pickle.load(handler)
@@ -45,7 +45,7 @@ pdf = PDF()
 # Iterate through tickers to generate pdfs
 for stock in tickers:
 
-    with open(fr"portfolio_reports_1_31_22\{stock}.txt", "r") as file:
+    with open(fr"portfolio_reports_1-31-23\{stock}.txt", "r") as file:
 
         # Add a page
         pdf.add_page()
@@ -86,4 +86,4 @@ for stock in tickers:
         # pdf.output(fr"{stock}_report.pdf")
 
 # save the pdf with name .pdf
-pdf.output(fr"portfolio_reports_1_31_22/equity_research_reports_{date}.pdf")
+pdf.output(fr"portfolio_reports_1-31-23/equity_research_reports_{date}.pdf")
