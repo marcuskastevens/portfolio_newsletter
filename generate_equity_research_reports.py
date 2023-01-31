@@ -14,7 +14,7 @@ Workflow:
 
 
 # Leverage polymorphism / inheritance to overwrite the footer method in FPDF class
-class PDF(FPDF):
+class PDF(FPDF):    
 
     def __init__(self) -> None:
         super().__init__()        
