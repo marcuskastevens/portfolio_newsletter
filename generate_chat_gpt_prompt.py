@@ -75,8 +75,9 @@ class equity_research_reports():
 
                 # Iterate through <p> tags and store all information
                 for txt in article_txt_iter:
-                    article_txt += txt.text.strip()
-                
+                    # Ensure text is cleanred properly
+                    article_txt += str(txt.text.strip().encode('utf-8'))
+
                 return str(article_txt)
 
             except:
@@ -106,7 +107,8 @@ class equity_research_reports():
 
                 # Iterate through <p> tags and store all information
                 for txt in article_txt_iter:
-                    article_txt += txt.text.strip()
+                    # Ensure text is cleanred properly
+                    article_txt += str(txt.text.strip().encode('utf-8'))
                 
                 return str(article_txt)
             
@@ -219,11 +221,11 @@ class equity_research_reports():
                 article_summary += str(sentence)
                 article_summary += '\n'
             
-        print(type(article_summary))
-        print(article_summary)
-        print(len(article_summary.strip()))
-        print('\n')
-        print('==='*100)
+        # print(type(article_summary))
+        # print(str(article_summary))
+        # print(len(article_summary.strip()))
+        # print('\n')
+        # print('==='*100)
                                 
         # Recursively call compress_articles function until a short-enough response is generated
         if len(article_summary.strip()) > 15000:
@@ -249,7 +251,7 @@ class equity_research_reports():
 
         for stock in self.tickers:
             
-            print('=='*100)
+            print('=='*50)
             print(f'Getting report for {stock}:')
 
             prompt = f"You are a Wall Street fundamental stock portfolio manager and researcher who worked at both Citadel and Millennium, the hedge funds. You have a PhD in Mathematics and AI from MIT. Only using the following information, create a predictive stock market research report by extracting key financial/economic/business factors only from the following information to explain every factor that would impact {stock}'s stock price in the future and explain why these factors will dictate the companys price. Make sure there is an introduction and that it is a numerically listed report:"
@@ -269,13 +271,16 @@ class equity_research_reports():
 
 # Define portfolio constituents and generate compressed news summaries for each one that will act as prompts for ChatGPT3
 tickers = ['FTAI', 'AMT', 'NEE', 'TDOC', 'INTC', 'FISV', 'DAL', 'ISRG', 'GOOS', 'TXN', 'TSM', 'MHK', 'ACLS', 'EPD', 'PLYM', 'ED']
-# tickers = ['HIFS']
-equity_research_reports  = equity_research_reports(tickers).equity_research_reports 
+# tickers = ['NFLX']
+equity_research_reports  = equity_research_reports(tickers, n_articles=12).equity_research_reports 
 
-# Pickle the research report prompts
-path = r'portfolio_reports_1-31-23/chat_gpt_prompts.pickle'
+# Pickle the research report prompts by specifiying the path
+path = r'portfolio_reports_2-7-23/chat_gpt_prompts.pickle'
 with open(path, 'wb') as handler:
     pickle.dump(equity_research_reports, handler, protocol=pickle.HIGHEST_PROTOCOL) 
+
+with open(path, 'rb') as handler:
+    prompts = pickle.load(handler)
 
 # Print out all reports for ease of copy/paste
 for stock, report in equity_research_reports.items():
